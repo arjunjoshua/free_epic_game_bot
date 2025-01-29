@@ -1,11 +1,20 @@
+#!/usr/bin/env python3
+
 import discord
 from get_epic_game import get_epic_game
 import datetime
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+token = os.getenv("DISCORD_BOT_TOKEN")
+channel_id = os.getenv("CHANNEL_ID")
 
 # Create a discord client
 intents = discord.Intents.default()
 intents.messages = True
 client = discord.Client(intents=intents)
+
 
 
 @client.event
@@ -22,25 +31,28 @@ async def on_ready():
 
 # send data to a channel
 async def send_to_channel(current_free_game):
-    channel = client.get_channel(CHANNEL_ID)
-    current_date = datetime.datetime.now().strftime("%b %d, %Y")
-    date_in_one_week = (datetime.datetime.now() + datetime.timedelta(days=7)).strftime("%b %d, %Y")
+    channel = client.get_channel(int(channel_id))
+    date = datetime.datetime.now()
 
     # Get the next Thursday's date
-    while datetime.datetime.now().weekday() != 3:
-        date_in_one_week = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%b %d, %Y")
+    while date.weekday() != 3:
+        date += datetime.timedelta(days=1)
 
-    # set the date in one week to 16:00 UTC
-    date_in_one_week = f"{date_in_one_week} 16:00 UTC"
+    date_in_one_week_formatted = date.strftime("%b %d, %Y") + " 16:00 UTC"
 
-    message = f"This week's free game: {current_free_game['game_name']}\n\n Available until {date_in_one_week}"
-    image_url = current_free_game['image_url']
+    message = f"This week's free game: {current_free_game['game_name']}\n\n Available until {date_in_one_week_formatted}"
 
-    embed = discord.Embed(title=current_free_game["game_name"], url=current_free_game["game_url"], description="Available until {date_in_one_week}")
+    embed = discord.Embed(title=current_free_game["game_name"], url=current_free_game["game_url"],
+                          description="Available until {date_in_one_week}")
+    embed.set_image(url=current_free_game["image_url"])
 
     if channel:
         await channel.send(message, embed=embed)
 
     # close the connection
     await client.close()
+
+
+# start the bot
+client.run(token)
 

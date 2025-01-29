@@ -23,7 +23,7 @@ def get_epic_game():
 
         return {
             "game_name": current_free_game,
-            "image_url": image_url
+            "image_url": image_url,
             "game_url": f"https://www.epicgames.com/store/en-US/p/{game_url}"
         }
 
