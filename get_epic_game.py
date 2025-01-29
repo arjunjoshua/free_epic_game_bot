@@ -15,17 +15,15 @@ def get_epic_game():
         # get the current free game
         current_free_game = data["data"]["Catalog"]["searchStore"]["elements"][0]["title"]
 
-        # get the image of the current free game
-        image_url = data["data"]["Catalog"]["searchStore"]["elements"][0]["keyImages"][0]["url"]
-
         # get the url of the current free game
         game_url = data["data"]["Catalog"]["searchStore"]["elements"][0]["urlSlug"]
 
         return {
             "game_name": current_free_game,
-            "image_url": image_url,
-            "game_url": f"https://www.epicgames.com/store/en-US/p/{game_url}"
+            "image_url": data["data"]["Catalog"]["searchStore"]["elements"][0]["keyImages"][0]["url"],
+            "game_url": f"https://www.epicgames.com/store/en-US/p/{game_url}",
+            "description": data["data"]["Catalog"]["searchStore"]["elements"][0]["description"]
         }
 
     else:
-        return "Failed to get the current free game"
+        return None
