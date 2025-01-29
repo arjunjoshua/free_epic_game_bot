@@ -43,7 +43,7 @@ async def send_to_channel(current_free_game):
     message = f"This week's free game: {current_free_game['game_name']}\n\n Available until {date_in_one_week_formatted}"
 
     embed = discord.Embed(title=current_free_game["game_name"], url=current_free_game["game_url"],
-                          description="Available until {date_in_one_week}")
+                          description=f"Available until {date_in_one_week_formatted}")
     embed.set_image(url=current_free_game["image_url"])
 
     if channel:
