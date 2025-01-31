@@ -16,7 +16,6 @@ intents.messages = True
 client = discord.Client(intents=intents)
 
 
-
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
@@ -32,15 +31,12 @@ async def on_ready():
 # send data to a channel
 async def send_to_channel(current_free_game):
     channel = client.get_channel(int(channel_id))
-    date = datetime.datetime.now()
 
-    # Get the next Thursday's date
-    while date.weekday() != 3:
-        date += datetime.timedelta(days=1)
+    promo_end_date = datetime.datetime.strptime(current_free_game["promo_end_date"], "%Y-%m-%dT%H:%M:%S.%fZ")
 
-    date_in_one_week_formatted = date.strftime("%b %d, %Y") + " 16:00 UTC"
+    promo_end_date_formatted = promo_end_date.strftime("%B %d, %Y")
 
-    message = f"This week's free game: {current_free_game['game_name']}\n\n Available until {date_in_one_week_formatted}"
+    message = f"This week's free game: {current_free_game['game_name']}\n\n Available until {promo_end_date_formatted}"
 
     embed = discord.Embed(title=current_free_game["game_name"], url=current_free_game["game_url"],
                           description=current_free_game["description"], color=0x00ff00)
