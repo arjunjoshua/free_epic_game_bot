@@ -53,8 +53,9 @@ async def subscribe_to_free_game(ctx):
 
     # save the channel id to the .txt file
     channel_ids_from_file.append(ctx.channel.id)
-    with open("channel_ids.txt", "a") as f:
-        f.write(f"\n{ctx.channel.id}")
+    with open("channel_ids.txt", "w") as f:
+        for channel_id in channel_ids_from_file:
+            f.write(f"{channel_id}\n")
 
     await ctx.send("You have successfully subscribed to free game updates.")
 
