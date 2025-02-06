@@ -59,7 +59,7 @@ async def subscribe_to_free_game(ctx):
     await ctx.send("You have successfully subscribed to free game updates.")
 
 
-@client.command
+@client.command()
 async def unsubscribe_from_free_game(ctx):
     # check if the channel id is already in the list
     if ctx.channel.id not in channel_ids_from_file:
