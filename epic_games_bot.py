@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import asyncio
 import discord
 from discord.ext import commands
 from get_epic_game import get_epic_game
@@ -26,12 +26,9 @@ client = commands.Bot(command_prefix='!', intents=intents)
 async def on_ready():
     print(f'We have logged in as {client.user}')
 
-    # # get the current free game
-    # current_free_game = get_epic_game()
-    #
-    # if current_free_game:
-    #     # send the current free game to the channel
-    #     await send_to_channel(current_free_game)
+    # schedule the weekly free game update
+    if not hasattr(client, 'free_game_update_task'):
+        client.free_game_update_task = client.loop.create_task(schedule_update())
 
 
 @client.command()
@@ -57,7 +54,7 @@ async def subscribe_to_free_game(ctx):
     # save the channel id to the .txt file
     channel_ids_from_file.append(ctx.channel.id)
     with open("channel_ids.txt", "a") as f:
-        f.write(f"{ctx.channel.id}\n")
+        f.write(f"\n{ctx.channel.id}")
 
     await ctx.send("You have successfully subscribed to free game updates.")
 
@@ -97,6 +94,39 @@ async def send_to_channel(current_free_game, channel_ids=None):
         channel = client.get_channel(channel_id)
         if channel:
             await channel.send(message, embed=embed)
+
+
+async def schedule_update():
+    while not client.is_closed():
+        try:
+            game = get_epic_game()
+            promo_end_date = datetime.datetime.strptime(game["promo_end_date"], "%Y-%m-%dT%H:%M:%S.%fZ")
+
+            # find the time until the next update
+            current_time = datetime.datetime.utcnow()
+            time_until_update = promo_end_date - current_time
+
+            # Handle negative time (if promo already ended)
+            if time_until_update < datetime.timedelta(seconds=0):
+                print("Promo already ended. Scheduling next check in 1 hour.")
+                await asyncio.sleep(3600)  # 1 hour fallback
+                continue
+
+            print(f"Next update at {promo_end_date}")
+
+            # sleep until the next update
+            await asyncio.sleep(time_until_update.total_seconds())
+
+            # update the free game
+            game = get_epic_game()
+
+            # send the free game to the channel
+            await send_to_channel(game)
+        except Exception as e:
+            print(f"Error: {e}\nRetrying in 1 hour.")
+            await asyncio.sleep(3600)
+
+
 
 # start the bot
 client.run(token)
