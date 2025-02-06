@@ -13,29 +13,29 @@ def get_epic_game():
         data = response.json()
 
         # initialize the current free game to none
-        current_free_game = None
+        free_game_index = None
         # check which game in the array is the current free game
         for index, game in enumerate(data["data"]["Catalog"]["searchStore"]["elements"]):
             try:
                 if len(game["promotions"]["promotionalOffers"]) > 0:
-                    current_free_game = index
+                    free_game_index = index
                     break
             except KeyError:
                 pass
 
-        if current_free_game is None:
-            return None
+        if free_game_index is None:
+            return "There are no free games available at the moment."
 
         # get the url of the current free game
-        game_url = data["data"]["Catalog"]["searchStore"]["elements"][current_free_game]["urlSlug"]
+        game_url = data["data"]["Catalog"]["searchStore"]["elements"][free_game_index]["urlSlug"]
 
         return {
-            "game_name": data["data"]["Catalog"]["searchStore"]["elements"][current_free_game]["title"],
-            "image_url": data["data"]["Catalog"]["searchStore"]["elements"][current_free_game]["keyImages"][0]["url"],
+            "game_name": data["data"]["Catalog"]["searchStore"]["elements"][free_game_index]["title"],
+            "image_url": data["data"]["Catalog"]["searchStore"]["elements"][free_game_index]["keyImages"][0]["url"],
             "game_url": f"https://www.epicgames.com/store/en-US/p/{game_url}",
-            "description": data["data"]["Catalog"]["searchStore"]["elements"][current_free_game]["description"],
-            "promo_end_date": data["data"]["Catalog"]["searchStore"]["elements"][current_free_game]["promotions"]["promotionalOffers"][0]["promotionalOffers"][0]["endDate"]
+            "description": data["data"]["Catalog"]["searchStore"]["elements"][free_game_index]["description"],
+            "promo_end_date": data["data"]["Catalog"]["searchStore"]["elements"][free_game_index]["promotions"]["promotionalOffers"][0]["promotionalOffers"][0]["endDate"]
         }
 
     else:
-        return None
+        return "There is a problem with the Epic Games Store API. Please try again later."
