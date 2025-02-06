@@ -3,3 +3,4 @@
 .idea
 __pycache__
 /update_server.sh
+channel_ids.txt

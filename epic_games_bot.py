@@ -9,12 +9,13 @@ from dotenv import load_dotenv
 load_dotenv()
 token = os.getenv("DISCORD_BOT_TOKEN")
 channel_id = os.getenv("CHANNEL_ID")
+update_frequency = os.getenv("UPDATE_FREQUENCY")
 
 # Create a discord client
 intents = discord.Intents.default()
 intents.messages = True
+intents.message_content = True
 client = discord.Client(intents=intents)
-
 
 @client.event
 async def on_ready():
